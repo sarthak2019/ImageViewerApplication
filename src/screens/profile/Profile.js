@@ -104,6 +104,13 @@ class Profile extends Component{
 	closeModalHandler= () => {
 		this.setState({modalIsOpen : false,fullnameRequired:"dispNone",value: 0});
 	}
+	openImageModalHandler= (image_url) => {
+		this.setState({modalImageIsOpen : true});
+		this.props.history.push(image_url);
+	}
+	closeImageModalHandler= () => {
+		this.setState({modalImageIsOpen : false});
+	}
 	inputfullNameChangeHandler = (e) =>{
 		this.setState({fullname: e.target.value});
 	}
@@ -154,22 +161,21 @@ class Profile extends Component{
 							<Input id="fullname" placeholder="Full Name" type="text" fullname={this.state.fullname} onChange={this.inputfullNameChangeHandler}/>
 							<FormHelperText className={this.state.fullnameRequired}><span className="red">required</span></FormHelperText>
 						</FormControl><br/> */}
-						{this.state.loggedIn === true &&
-					                                <FormControl>
-					                                    <span className="successText">
-					                                        Login Successful!
-					                                    </span>
-					                                </FormControl>
-					        } <br /><br />
+						 <br /><br />
 						<Button variant="contained" color="primary" onClick={this.updateClickHandler}>UPDATE</Button>
 			</Modal>
 			<GridList cols={3} className={classes.gridListPosts} >
        			   {this.state.image_posts.map(image_post => (
 				<GridListTile key={"post" +image_post.id}> 
-	                            <img src={image_post.images.thumbnail.url} className="movie-poster" alt="Click" />
+	                            <img src={image_post.images.thumbnail.url} className="image-poster" alt="Click" onClick={() => this.openImageModalHandler(image_post.images.standard_resolution.url)} />
 	                        </GridListTile>
 	                    ))}
 	                </GridList>
+			<Modal ariaHideApp={false} isOpen={this.state.modalImageIsOpen} contentLabel="Images" onRequestClose={this.closeImageModalHandler} style={customStyles}>
+	                        
+				<img src={this.props.history.match.params.image_url} className="image-poster" alt="as" />
+				
+			</Modal>
 		</div>
 		);
 	}
