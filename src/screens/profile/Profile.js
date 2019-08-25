@@ -12,6 +12,10 @@ import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import TextField from '@material-ui/core/TextField';
+import FormLabel from '@material-ui/core/FormLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import Typography from '@material-ui/core/Typography';
 //import './Profile.css'
 
 const classes = makeStyles({
@@ -103,21 +107,29 @@ class Profile extends Component{
 	inputfullNameChangeHandler = (e) =>{
 		this.setState({fullname: e.target.value});
 	}
+
+	updateClickHandler = () =>{
+		this.state.fullname=== "" ? this.setState({fullnameRequired: "dispBlock"}) : this.setState({fullnameRequired: "dispNone"});
+		let updateFullName= JSON.stringify({
+			  "full_name": this.state.fullname,
+		})
+		let xhrUpdate = new XMLHttpRequest ();
+		let that=this;
+		xhrUpdate.addEventListener("readystatechange", function(){
+			if(this.readyState===4){
+				console.log("--"+this.responseText);
+			}
+		});
+		var baseUrl="https://api.instagram.com/v1/users/self/?access_token=18621945434.69f451e.ba20db8552f241eabbaa87e804f73169";
+		//xhrSignUp.open("POST", this.props.baseUrl + "signup");
+		xhrUpdate.open("POST", baseUrl);
+		xhrUpdate.setRequestHeader("Content-Type","application/json");
+		xhrUpdate.setRequestHeader("Cache-Control", "no-cache");
+        	xhrUpdate.send(updateFullName);
+	}
 	
 	render(){
 		
-	/*	const classes = makeStyles({
-  avatar: {
-    margin: 10,
- width: 80,
-    height: 80,
-  },
-  bigAvatar: {
-    margin: 10 ,
-    width: 50 !important,
-    height: 50,
-  },
-});;*/
 		return(
 		<div>
 			<Grid container justify="center" alignItems="center">
@@ -133,10 +145,15 @@ class Profile extends Component{
 			     </span>
 			</Grid>
 			<Modal ariaHideApp={false} isOpen={this.state.modalIsOpen} contentLabel="Edit" onRequestClose={this.closeModalHandler} style={customStyles}>
-						<FormControl required>
+						<FormControl label="Edit">
+							<Typography >Edit </Typography>
+							<TextField  required   id="fullname"   label="Full Name"   defaultValue={this.state.information.full_name}   onChange={this.inputfullNameChangeHandler} margin="normal"  />
+							<FormHelperText className={this.state.fullnameRequired}><span className="red">required</span></FormHelperText>
+						</FormControl>							
+						{/*<FormControl required>
 							<Input id="fullname" placeholder="Full Name" type="text" fullname={this.state.fullname} onChange={this.inputfullNameChangeHandler}/>
 							<FormHelperText className={this.state.fullnameRequired}><span className="red">required</span></FormHelperText>
-						</FormControl><br/>
+						</FormControl><br/> */}
 						{this.state.loggedIn === true &&
 					                                <FormControl>
 					                                    <span className="successText">
@@ -145,7 +162,6 @@ class Profile extends Component{
 					                                </FormControl>
 					        } <br /><br />
 						<Button variant="contained" color="primary" onClick={this.updateClickHandler}>UPDATE</Button>
-					
 			</Modal>
 			<GridList cols={3} className={classes.gridListPosts} >
        			   {this.state.image_posts.map(image_post => (
