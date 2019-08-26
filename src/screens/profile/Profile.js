@@ -56,6 +56,7 @@ class Profile extends Component{
 			modalIsOpen: false,
 			fullnameRequired: "dispNone",
 			fullname: "",
+			currentImage: "",
 			loggedIn: sessionStorage.getItem("access-token") == null ? false : true
 		}
 	}
@@ -106,7 +107,9 @@ class Profile extends Component{
 	}
 	openImageModalHandler= (image_url) => {
 		this.setState({modalImageIsOpen : true});
-		this.props.history.push(image_url);
+		this.setState({currentImage : image_url});
+		//this.props.history.push(image_url);
+		
 	}
 	closeImageModalHandler= () => {
 		this.setState({modalImageIsOpen : false});
@@ -172,9 +175,16 @@ class Profile extends Component{
 	                    ))}
 	                </GridList>
 			<Modal ariaHideApp={false} isOpen={this.state.modalImageIsOpen} contentLabel="Images" onRequestClose={this.closeImageModalHandler} style={customStyles}>
-	                        
-				<img src={this.props.history.match.params.image_url} className="image-poster" alt="as" />
+                         {this.state.image_posts.map(user_post => (
+			    <Grid container justify="center" alignItems="center">    
+				<img src={this.state.currentImage} className="image-poster" alt="as" />
 				
+					<Avatar alt={user_post.user.full_name} src={user_post.user.profile_picture}  className={classes.bigAvatar}/>
+				        <span>
+						<div>{user_post.user.username} </div>
+					</span>
+			   </Grid>
+			))}
 			</Modal>
 		</div>
 		);
