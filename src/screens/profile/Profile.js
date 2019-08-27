@@ -175,15 +175,16 @@ class Profile extends Component{
 	                    ))}
 	                </GridList>
 			<Modal ariaHideApp={false} isOpen={this.state.modalImageIsOpen} contentLabel="Images" onRequestClose={this.closeImageModalHandler} style={customStyles}>
+			<img src={this.state.currentImage} className="image-poster" alt="as" />
+			
                          {this.state.image_posts.map(user_post => (
-			    <Grid container justify="center" alignItems="center">    
-				<img src={this.state.currentImage} className="image-poster" alt="as" />
-				
+			     <div key={user_post.id}>    
+					
 					<Avatar alt={user_post.user.full_name} src={user_post.user.profile_picture}  className={classes.bigAvatar}/>
 				        <span>
 						<div>{user_post.user.username} </div>
 					</span>
-			   </Grid>
+			   </div>
 			))}
 			</Modal>
 		</div>
