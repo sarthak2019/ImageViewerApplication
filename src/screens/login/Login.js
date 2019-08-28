@@ -61,7 +61,7 @@ class Login extends Component {
 
         return(
             <div>
-                <Header />
+                 <Header screen={"Login"} />
                 <Grid container justify="center">
                     <Card>
                         <CardContent>
