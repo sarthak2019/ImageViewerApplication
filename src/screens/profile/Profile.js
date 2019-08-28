@@ -139,8 +139,11 @@ class Profile extends Component{
 	}
 	
 	render(){
-		
+		let hashTags = this.state.image_posts.map(hash =>{
+      return "#"+hash.tags;
+    });
 		return(
+	
 		<div>
 			<Grid container justify="center" alignItems="center">
 				<Avatar alt={this.state.information.full_name} src={this.state.information.profile_picture}  className={classes.bigAvatar}/>
@@ -179,11 +182,15 @@ class Profile extends Component{
 			
                          {this.state.image_posts.map(user_post => (
 			     <div key={user_post.id}>    
-					
 					<Avatar alt={user_post.user.full_name} src={user_post.user.profile_picture}  className={classes.bigAvatar}/>
 				        <span>
 						<div>{user_post.user.username} </div>
 					</span>
+					<hr/>
+					<span>{user_post.caption} {user_post.created_time}</span>
+					<Typography style={{color:'#4dabf5'}} component="p" >
+               					 {hashTags.join(' ')}
+              				</Typography>
 			   </div>
 			))}
 			</Modal>
