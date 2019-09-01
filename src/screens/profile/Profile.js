@@ -20,14 +20,20 @@ import IconButton from '@material-ui/core/IconButton';
 import FavoriteIconBorder from '@material-ui/icons/FavoriteBorder';
 import FavoriteIconFill from '@material-ui/icons/Favorite';
 import Header from '../../common/header/Header';
-import {constants} from '../../common/utils'
+import {constants} from '../../common/utils';
 //import './Profile.css'
 
 const classes = makeStyles({
+//const classes =  theme => ({
   bigAvatar: {
-    margin: '10px !important' ,
-    width: '50px  !important',
-    height: '50px  !important',
+    margin: 10 ,
+    width: 50 ,
+    height: 50
+  },
+  avatar: {
+    margin: 10 ,
+    width: 50 ,
+    height: 50
   },
   gridListPosts: {
         flexWrap: 'nowrap',
@@ -198,11 +204,12 @@ class Profile extends Component{
 		          userProfileUrl={this.state.information.profile_picture}
 		          screen={"Profile"}
 		          handleLogout={this.logout}
-		          handleAccount={this.navigateToAccount}/>
+		          handleAccount={this.navigateToAccount} />
+			<br/><br/><br/><br/><br/>
 			<Grid container justify="center" alignItems="center">
-				<Avatar alt={this.state.information.full_name} src={this.state.information.profile_picture}  className={classes.bigAvatar}/>
+				<Avatar alt={this.state.information.full_name} src={this.state.information.profile_picture}  className={classes.avatar}/>
 		             <span>
-				<div>{this.state.information.username} </div>
+				<div> <h3>{this.state.information.username}  </h3></div>
 				<div>Posts: {this.state.counts.media}  Follows: {this.state.counts.follows} Followed By: {this.state.counts.followed_by} </div>
 				<div>{this.state.information.full_name}   
 					<Fab color="secondary" aria-label="edit" className={classes.fab}  >
@@ -238,10 +245,14 @@ class Profile extends Component{
 			     <div key={user_post.id}>    
 					<Avatar alt={user_post.user.full_name} src={user_post.user.profile_picture}  className={classes.bigAvatar}/>
 				        <span>
-						<div>{user_post.user.username} </div>
+						<div>{user_post.user.username}</div>
 					</span>
 					<hr/>
-					<span>{user_post.caption} {user_post.created_time}</span>
+					{/*let user_caption= {user_post.caption};
+					<div key={user_caption.id}>
+					<span>{user_post.caption.text} {user_post.created_time}</span>
+					</div>*/}
+					
 					<Typography style={{color:'#4dabf5'}} component="p" >
                					 {hashTags.join(' ')}
               				</Typography>
