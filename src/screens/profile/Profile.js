@@ -16,6 +16,10 @@ import TextField from '@material-ui/core/TextField';
 import FormLabel from '@material-ui/core/FormLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIconBorder from '@material-ui/icons/FavoriteBorder';
+import FavoriteIconFill from '@material-ui/icons/Favorite';
+import Header from '../../common/header/Header';
 //import './Profile.css'
 
 const classes = makeStyles({
@@ -32,6 +36,16 @@ const classes = makeStyles({
     fab: {
     	margin: 'spacing(1)',
    },
+  hr:{
+    marginTop:'10px',
+    borderTop:'2px solid #f2f2f2'
+  },
+   grid:{
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
+    marginTop:90
+  }
 });
 
 const customStyles = {
@@ -57,6 +71,10 @@ class Profile extends Component{
 			fullnameRequired: "dispNone",
 			fullname: "",
 			currentImage: "",
+			comment: "",
+			comments: "",
+			currentComment: "",
+			isLiked : false,
 			loggedIn: sessionStorage.getItem("access-token") == null ? false : true
 		}
 	}
@@ -118,7 +136,26 @@ class Profile extends Component{
 		this.setState({fullname: e.target.value});
 	}
 
-	updateClickHandler = () =>{
+	addCommentClickHandler = (id)=>{
+	    if (this.state.currentComment === "" || typeof this.state.currentComment === undefined) {
+	      return;
+	    }
+	 console.log("In addCommentClickHandler");
+	    let commentList = this.state.comments.hasOwnProperty(id)?
+	      this.state.comments[id].concat(this.state.currentComment): [].concat(this.state.currentComment);
+	 console.log(" currentComment"+this.state.currentComment);	
+	    this.setState({
+	      comments:{
+	        ...this.state.comments,
+	        [id]:commentList
+	      },
+	      currentComment:''
+	    })
+	  }
+
+	
+	
+ 	 updateClickHandler = () =>{
 		this.state.fullname=== "" ? this.setState({fullnameRequired: "dispBlock"}) : this.setState({fullnameRequired: "dispNone"});
 		let updateFullName= JSON.stringify({
 			  "full_name": this.state.fullname,
@@ -142,9 +179,16 @@ class Profile extends Component{
 		let hashTags = this.state.image_posts.map(hash =>{
       return "#"+hash.tags;
     });
+	const comments = this.props;
+ 	
 		return(
-	
+		
 		<div>
+			<Header
+		          userProfileUrl={this.state.information.profile_picture}
+		          screen={"Profile"}
+		          handleLogout={this.logout}
+		          handleAccount={this.navigateToAccount}/>
 			<Grid container justify="center" alignItems="center">
 				<Avatar alt={this.state.information.full_name} src={this.state.information.profile_picture}  className={classes.bigAvatar}/>
 		             <span>
@@ -191,12 +235,85 @@ class Profile extends Component{
 					<Typography style={{color:'#4dabf5'}} component="p" >
                					 {hashTags.join(' ')}
               				</Typography>
+					<span>
+					  	<IconButton aria-label="Add to favorites" onClick={this.onLikeClicked.bind(this,user_post.id)}>
+					                {this.state.isLiked && <FavoriteIconFill style={{color:'#F44336'}}/>}
+					                {!this.state.isLiked && <FavoriteIconBorder/>}
+					              </IconButton>
+					              <Typography component="p">
+					                {user_post.likes.count} Likes
+					              </Typography>
+					</span>
+					{comments.hasOwnProperty(user_post.id) && comments[user_post.id].map((comment, index)=>{
+				              return(
+				                <div key={index} className="row">
+				                  <Typography component="p" style={{fontWeight:'bold'}}>
+				                    {sessionStorage.getItem('username')}:
+				                  </Typography>
+				                  <Typography component="p" >
+				                    {comment}
+				                  </Typography>
+				                </div>
+				              )
+			               })}
+					<div >
+					              <FormControl style={{flexGrow:1}}>
+					                <InputLabel htmlFor="comment">Add Comment</InputLabel>
+					                <Input id="comment" value={this.state.comment} onChange={this.commentChangeHandler}/>
+					              </FormControl>
+					              <FormControl>
+					               {/* <Button onClick={this.addCommentClickHandler(user_post.id)}
+					                   variant="contained" color="primary">*/}
+							<Button onClick={this.onAddCommentClicked.bind(this,user_post.id)}
+							  variant="contained" color="primary">
+					                  ADD
+					                </Button>
+					              </FormControl>
+            				</div>
 			   </div>
 			))}
 			</Modal>
 		</div>
 		);
 	}
+	
+	commentChangeHandler = (e) => {
+	    this.setState({
+	      currentComment:e.target.value
+	    });
+	 }
+	
+	 onLikeClicked = (id) => {
+	    if (this.state.isLiked) {
+	      this.setState({
+	        isLiked:false
+	      });
+	    }else {
+	      this.setState({
+	        isLiked:true
+	      });
+	    }
+	    this.props.onLikedClicked(id)
+	 }
+
+	onAddCommentClicked = (id) => {
+	    if (this.state.comment === "" || typeof this.state.comment === undefined) {
+	      return;
+	    }
+	    this.setState({
+	      comment:""
+	    });
+	    this.props.onAddCommentClicked(id);
+	 }
+		
+	 logout = () => {
+	    sessionStorage.clear();
+	    this.props.history.replace('/');
+	  }
+	
+	 navigateToAccount = () =>{
+	    this.props.history.push('/profile');
+	  }
 }
 
 export default  Profile;
