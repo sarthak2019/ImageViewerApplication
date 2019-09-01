@@ -19,6 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import FavoriteIconBorder from '@material-ui/icons/FavoriteBorder';
 import FavoriteIconFill from '@material-ui/icons/Favorite';
+import Header from '../../common/header/Header';
 //import './Profile.css'
 
 const classes = makeStyles({
@@ -173,6 +174,11 @@ class Profile extends Component{
 		return(
 		
 		<div>
+			<Header
+		          userProfileUrl={this.state.information.profile_picture}
+		          screen={"Profile"}
+		          handleLogout={this.logout}
+		          handleAccount={this.navigateToAccount}/>
 			<Grid container justify="center" alignItems="center">
 				<Avatar alt={this.state.information.full_name} src={this.state.information.profile_picture}  className={classes.bigAvatar}/>
 		             <span>
@@ -289,6 +295,15 @@ class Profile extends Component{
 	    });
 	    this.props.onAddCommentClicked(id);
 	 }
+		
+	 logout = () => {
+	    sessionStorage.clear();
+	    this.props.history.replace('/');
+	  }
+	
+	 navigateToAccount = () =>{
+	    this.props.history.push('/profile');
+	  }
 }
 
 export default  Profile;
