@@ -20,6 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import FavoriteIconBorder from '@material-ui/icons/FavoriteBorder';
 import FavoriteIconFill from '@material-ui/icons/Favorite';
 import Header from '../../common/header/Header';
+import {constants} from '../../common/utils'
 //import './Profile.css'
 
 const classes = makeStyles({
@@ -63,6 +64,9 @@ class Profile extends Component{
 	
 	constructor(){
 		super();
+    /*if (sessionStorage.getItem('access-token') == null) {
+      this.props.history.replace('/');
+    }*/
 		this.state={
 			information: [],
 			image_posts: [],
@@ -79,7 +83,7 @@ class Profile extends Component{
 		}
 	}
 
-	componentWillMount(){
+	componentDidMount(){
 		//Released movies
 		let data=null;
 		let xhr= new XMLHttpRequest();
@@ -94,7 +98,12 @@ class Profile extends Component{
 		});
 
 		//xhr.open("GET",this.props.baseUrl+"movies");
-		var baseUrl="https://api.instagram.com/v1/users/self/?access_token=18621945434.69f451e.ba20db8552f241eabbaa87e804f73169";
+		//var baseUrl="https://api.instagram.com/v1/users/self/?access_token=18621945434.69f451e.ba20db8552f241eabbaa87e804f73169";
+		//sessionStorage.setItem("access-token","8661035776.d0fcd39.39f63ab2f88d4f9c92b0862729ee2784"); //- gangadhar
+		//Temporary- sarthak's token
+		sessionStorage.setItem("access-token","18621945434.69f451e.ba20db8552f241eabbaa87e804f73169");
+		let	baseUrl=`${constants.userInfoUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
+	//	console.log(`${constants.userInfoUrl}/?access_token=${sessionStorage.getItem('access-token')}`);
 		xhr.open("GET", baseUrl);
 		//xhr.open("GET", this.props.baseUrl + "movies?status=PUBLISHED");
 		xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -110,7 +119,8 @@ class Profile extends Component{
 				})
 			}
 		});
-		baseUrl="https://api.instagram.com/v1/users/self/media/recent?access_token=18621945434.69f451e.ba20db8552f241eabbaa87e804f73169";
+		//baseUrl="https://api.instagram.com/v1/users/self/media/recent?access_token=18621945434.69f451e.ba20db8552f241eabbaa87e804f73169";
+		baseUrl=`${constants.userMediaUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
 		xhrReleased.open("GET", baseUrl);
 		//xhrReleased.open("GET", this.props.baseUrl + "movies?status=RELEASED");
 		xhrReleased.setRequestHeader("Cache-Control", "no-cache");
