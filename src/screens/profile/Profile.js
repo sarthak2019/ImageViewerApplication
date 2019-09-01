@@ -36,6 +36,16 @@ const classes = makeStyles({
     fab: {
     	margin: 'spacing(1)',
    },
+  hr:{
+    marginTop:'10px',
+    borderTop:'2px solid #f2f2f2'
+  },
+   grid:{
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
+    marginTop:90
+  }
 });
 
 const customStyles = {
