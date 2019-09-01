@@ -111,10 +111,15 @@ class Home extends Component{
 
   onSearchEntered = (value) =>{
     let filteredData = this.state.data;
-    filteredData = filteredData.filter((data) =>{
-      let string = data.caption.text.toLowerCase();
-      let subString = value.toLowerCase();
-      return string.includes(subString);
+    filteredData = filteredData.filter((data) => {
+      if (data.caption !== null && value !== "") {
+        let string = data.caption.text.toLowerCase();
+        let subString = value.toLowerCase();
+        return string.includes(subString);
+      }
+      if (data.caption === null && value === "") {
+        return true;
+      }
     })
     this.setState({
       filteredData
@@ -253,11 +258,10 @@ class HomeItem extends Component{
             <CardMedia
               className={classes.media}
               image={item.images.standard_resolution.url}
-              title={item.caption.text}
             />
             <div  className={classes.hr}>
               <Typography component="p">
-                {item.caption.text}
+              {(item.caption !== null) && (item.caption.text)}
               </Typography>
               <Typography style={{color:'#4dabf5'}} component="p" >
                 {hashTags.join(' ')}
@@ -271,7 +275,8 @@ class HomeItem extends Component{
                 {!this.state.isLiked && <FavoriteIconBorder/>}
               </IconButton>
               <Typography component="p">
-                {item.likes.count} Likes
+                {item.likes.count === 1 &&  <span>{item.likes.count} like</span>}
+                {item.likes.count !== 1 &&  <span>{item.likes.count} likes</span>}
               </Typography>
             </CardActions>
 
@@ -280,7 +285,7 @@ class HomeItem extends Component{
               return(
                 <div key={index} className="row">
                   <Typography component="p" style={{fontWeight:'bold'}}>
-                    {sessionStorage.getItem('username')}:
+                    <span>{item.user.username}:&nbsp;</span>
                   </Typography>
                   <Typography component="p" >
                     {comment}

@@ -72,7 +72,7 @@ class Header extends Component {
   render() {
     const { classes, screen } = this.props;
     return (
-      <div>
+      <div className="parent-div">
         <AppBar className={classes.appHeader}>
           <Toolbar>
             {(screen === "Login" || screen === "Home") && (
