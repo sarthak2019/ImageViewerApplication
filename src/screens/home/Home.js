@@ -117,7 +117,7 @@ class Home extends Component{
         let subString = value.toLowerCase();
         return string.includes(subString);
       }
-      if (data.caption === null && value === "") {
+      if (value === "") {
         return true;
       }
     })
