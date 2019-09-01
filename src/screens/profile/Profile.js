@@ -205,7 +205,7 @@ class Profile extends Component{
 		          screen={"Profile"}
 		          handleLogout={this.logout}
 		          handleAccount={this.navigateToAccount} />
-			<br/><br/><br/><br/><br/>
+			<br/><br/><br/><br/>
 			<Grid container justify="center" alignItems="center">
 				<Avatar alt={this.state.information.full_name} src={this.state.information.profile_picture}  className={classes.avatar}/>
 		             <span>
