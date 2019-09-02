@@ -35,7 +35,8 @@ const classes = makeStyles({
     width: 50 ,
     height: 50
   },
-  gridListPosts: {
+  gridListPosts: { 
+	paddingTop: 10,
         flexWrap: 'nowrap',
         transform: 'translateZ(0)',
         width: '100%'
@@ -211,14 +212,17 @@ class Profile extends Component{
 		             <span>
 				<div> <h3>{this.state.information.username}  </h3></div>
 				<div>Posts: {this.state.counts.media}  Follows: {this.state.counts.follows} Followed By: {this.state.counts.followed_by} </div>
-				<div>{this.state.information.full_name}   
-					<Fab color="secondary" aria-label="edit" className={classes.fab}  >
-				        	<EditIcon onClick={this.openModalHandler} />
-      					</Fab>
+				<div>
+					{this.state.information.full_name}   
+					<span style={{paddingLeft:10,}}>
+						<Fab color="secondary" aria-label="edit" className={classes.fab}  >
+					        	<EditIcon onClick={this.openModalHandler} />
+	      					</Fab>
+					</span>
 				</div>
 			     </span>
 			</Grid>
-			<Modal ariaHideApp={false} isOpen={this.state.modalIsOpen} contentLabel="Edit" onRequestClose={this.closeModalHandler} style={customStyles}>
+			<Modal ariaHideApp={false} isOpen={this.state.modalIsOpen} contentLabel="Edit" onRequestClose={this.closeModalHandler} style={{customStyles}}>
 						<FormControl label="Edit">
 							<Typography >Edit </Typography>
 							<TextField  required   id="fullname"   label="Full Name"   defaultValue={this.state.information.full_name}   onChange={this.inputfullNameChangeHandler} margin="normal"  />
