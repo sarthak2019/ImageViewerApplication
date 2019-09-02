@@ -13,6 +13,8 @@ import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import CardMedia from '@material-ui/core/CardMedia';
 import GridList from '@material-ui/core/GridList';
+import Fab from '@material-ui/core/Fab';
+import EditIcon from '@material-ui/icons/Edit';
 import GridListTile from '@material-ui/core/GridListTile';
 import IconButton from '@material-ui/core/IconButton';
 import FavoriteIconBorder from '@material-ui/icons/FavoriteBorder';
@@ -222,11 +224,11 @@ class Profile extends Component {
                             <div style={{float: "left", width: "200px", fontSize: "small"}}> Follows: {this.state.follows} </div>
                             <div style={{float: "left", width: "200px", fontSize: "small"}}> Followed By: {this.state.followed_by}</div> <br />
                         </div>
-                        <div style={{fontSize: "small"}}> {this.state.full_name}
-                        <Button mini variant="fab" color="secondary" aria-label="Edit" style={{marginLeft: "20px"}} onClick={this.handleOpenEditModal}>
-                            <Icon>edit_icon</Icon>
-                        </Button>
-                        </div>
+                        <div>{this.state.full_name}&nbsp;&nbsp;
+							<Fab size="small" color="secondary" aria-label="edit" >
+								<EditIcon onClick={this.handleOpenEditModal} />
+							</Fab>
+						</div>
                         <Modal
                             aria-labelledby="edit-modal"
                             aria-describedby="modal to edit user full name"
@@ -293,7 +295,7 @@ class Profile extends Component {
                         <div style={{display:'flex', height:'100%', flexDirection:'column', justifyContent:'space-between'}}>
                           <div>
                             <Typography component="p">
-                              {this.state.currentItem.caption.text}
+							{(this.state.currentItem.caption.text !== null) && (this.state.currentItem.caption.text).substring(0, this.state.currentItem.caption.text.indexOf('#'))}
                             </Typography>
                             <Typography style={{color:'#4dabf5'}} component="p" >
                               {hashTags.join(' ')}
@@ -302,7 +304,7 @@ class Profile extends Component {
                               return(
                                 <div key={index} className="rowStyle">
                                   <Typography component="p" style={{fontWeight:'bold'}}>
-                                    {sessionStorage.getItem('username')}:
+								  <span>{this.state.username}:&nbsp;</span>
                                   </Typography>
                                   <Typography component="p" >
                                     {comment}
