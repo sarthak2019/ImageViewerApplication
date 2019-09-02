@@ -27,14 +27,15 @@ class Login extends Component {
         }
     }
 
+    /* The below function will be called when the value of username input field gets changed. */
     inputUsernameChangeHandler = (e) => {
         this.setState({ username: e.target.value });
     }
-
+    /* The below function will be called when the value of password input field gets changed. */
     inputPasswordChangeHandler = (e) => {
         this.setState({ password: e.target.value });
     }
-
+    /* The below function will be called when the LOGIN button gets clicked. */
     loginClickHandler = () => {
         this.setState({ invalidCredentials: "dispNone" });
         this.state.username === "" ? this.setState({ usernameRequired: "dispBlock" }) : this.setState({ usernameRequired: "dispNone" });
@@ -52,16 +53,17 @@ class Login extends Component {
         }
     }
 
-    render(){
+    render() {
         const { redirect } = this.state;
 
+        /* If value of the state variable redirect is true then the render function will redirect to /home */
         if (redirect) {
-            return <Redirect to='/home'/>;
+            return <Redirect to='/home' />;
         }
 
-        return(
+        return (
             <div>
-                 <Header screen={"Login"} />
+                <Header screen={"Login"} />
                 <Grid container justify="center">
                     <Card>
                         <CardContent>
@@ -94,9 +96,9 @@ class Login extends Component {
                     </Card>
                 </Grid>
             </div>
-            
+
         )
-        
+
     }
 }
 

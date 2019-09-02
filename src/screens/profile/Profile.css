@@ -3,6 +3,7 @@
     justify-content: center;
     margin-top: 100px;
 }
+
 .rowStyle{
   display:flex;
   flex-direction:row;
