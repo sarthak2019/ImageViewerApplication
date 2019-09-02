@@ -28,7 +28,7 @@ const styles =  theme =>({
 	bigAvatar: {
 		margin: '10px !important',
 		width: '50px  !important',
-		height: '50px  !important',
+		height: '50px  !important'
 	},
 	gridListPosts: {
 		transform: 'translateZ(0)',
@@ -50,6 +50,17 @@ const styles =  theme =>({
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginTop: 90
+	},
+	sideClass: {
+		display: 'flex',
+		flexDirection: 'row',
+		height: '50%'
+	},
+	displayInline: {
+		display: 'inline'
+	},
+	imageStandard: {
+		height: '70vh'
 	}
 });
 
@@ -88,6 +99,7 @@ class Profile extends Component {
 			comments: "",
 			currentComment: "",
 			isLiked: false,
+			modalImageIsOpen: false,
 			loggedIn: sessionStorage.getItem("access-token") == null ? false : true
 		}
 	}
@@ -104,10 +116,14 @@ class Profile extends Component {
 	closeModalHandler = () => {
 		this.setState({ modalIsOpen: false, fullnameRequired: "dispNone", value: 0 });
 	}
-	openImageModalHandler = (image_url) => {
-		this.setState({ modalImageIsOpen: true });
-		this.setState({ currentImage: image_url });
+	openImageModalHandler = (image_post) => {
+		let currentState = this.state;
+		currentState.modalImageIsOpen = true;
+		currentState.currentImage = image_post;
+		// this.setState({ modalImageIsOpen: true,
+		// 	currentImage: image_post, });
 		//this.props.history.push(image_url);
+		this.setState({state: currentState});
 
 	}
 	closeImageModalHandler = () => {
@@ -186,16 +202,23 @@ class Profile extends Component {
 					<GridList cols={3} justify="center" className={classes.gridListPosts} >
 						{this.state.image_posts.map(image_post => (
 							<GridListTile key={"post" + image_post.id}>
-								<img src={image_post.images.thumbnail.url} className="image-poster" alt="Click" onClick={() => this.openImageModalHandler(image_post.images.standard_resolution.url)} />
+								<img src={image_post.images.thumbnail.url} className="image-poster" alt="Click" onClick={() => this.openImageModalHandler(image_post)} />
 							</GridListTile>
 						))}
 					</GridList>
 				</div>
 				
 				<Modal ariaHideApp={false} isOpen={this.state.modalImageIsOpen} contentLabel="Images" onRequestClose={this.closeImageModalHandler} style={customStyles}>
-					<img src={this.state.currentImage} className="image-poster" alt="as" />
+				{(this.state.currentImage !== "") && <Grid container justify="top" alignItems="center"> 
+							 <img src={this.state.currentImage.images.standard_resolution.url} className={classes.imageStandard} alt="as" />
+							<Avatar alt={this.state.fullname} src={this.state.information.profile_picture} className={classes.bigAvatar} />
+								{this.state.information.username}
+								{(this.state.currentImage.caption !== null) && <span>{(this.state.currentImage.caption.text).substring(0, this.state.currentImage.caption.text.indexOf('#'))}</span>}
 
-					{this.state.image_posts.map(user_post => (
+					</Grid>}
+					
+					
+					{/* {this.state.image_posts.map(user_post => (
 						<div key={user_post.id}>
 							<Avatar alt={user_post.user.full_name} src={user_post.user.profile_picture} className={classes.bigAvatar} />
 							<span>
@@ -233,8 +256,6 @@ class Profile extends Component {
 									<Input id="comment" value={this.state.comment} onChange={this.commentChangeHandler} />
 								</FormControl>
 								<FormControl>
-									{/* <Button onClick={this.addCommentClickHandler(user_post.id)}
-					                   variant="contained" color="primary">*/}
 									<Button onClick={this.onAddCommentClicked.bind(this, user_post.id)}
 										variant="contained" color="primary">
 										ADD
@@ -242,7 +263,7 @@ class Profile extends Component {
 								</FormControl>
 							</div>
 						</div>
-					))}
+					))} */}
 				</Modal>
 			</div>
 		);

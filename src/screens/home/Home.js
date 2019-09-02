@@ -261,7 +261,7 @@ class HomeItem extends Component{
             />
             <div  className={classes.hr}>
               <Typography component="p">
-              {(item.caption !== null) && (item.caption.text)}
+              {(item.caption !== null) && (item.caption.text).substring(0, item.caption.text.indexOf('#'))}
               </Typography>
               <Typography style={{color:'#4dabf5'}} component="p" >
                 {hashTags.join(' ')}
