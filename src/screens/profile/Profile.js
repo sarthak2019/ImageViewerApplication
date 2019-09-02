@@ -1,347 +1,346 @@
-import React, { Component } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, {Component} from 'react';
+import './Profile.css';
+import {constants} from '../../common/utils'
+import Header from '../../common/header/Header';
 import Avatar from '@material-ui/core/Avatar';
-import Grid from '@material-ui/core/Grid';
-import Fab from '@material-ui/core/Fab';
-import EditIcon from '@material-ui/icons/Edit';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
+import Modal from '@material-ui/core/Modal';
+import Typography from '@material-ui/core/Typography';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import CardMedia from '@material-ui/core/CardMedia';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import Modal from 'react-modal';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import Button from '@material-ui/core/Button';
-import {withStyles} from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import FormLabel from '@material-ui/core/FormLabel';
-import InputLabel from '@material-ui/core/InputLabel';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import FavoriteIconBorder from '@material-ui/icons/FavoriteBorder';
 import FavoriteIconFill from '@material-ui/icons/Favorite';
-import Header from '../../common/header/Header';
-import { constants } from '../../common/utils'
-//import './Profile.css'
 
-const styles =  theme =>({
-	bigAvatar: {
-		margin: '10px !important',
-		width: '50px  !important',
-		height: '50px  !important'
-	},
-	gridListPosts: {
-		transform: 'translateZ(0)',
-		width: '100%'
-	},
-	gridDiv: {
-		margin: 'auto',
-  		width: '60%',
-	},
-	fab: {
-		margin: 'spacing(1)'
-	},
-	hr: {
-		marginTop: '10px',
-		borderTop: '2px solid #f2f2f2'
-	},
-	grid: {
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		marginTop: 90
-	},
-	sideClass: {
-		display: 'flex',
-		flexDirection: 'row',
-		height: '50%'
-	},
-	displayInline: {
-		display: 'inline'
-	},
-	imageStandard: {
-		height: '70vh'
-	}
-});
-
-const customStyles = {
-	content: {
-		top: '50%',
-		left: '50%',
-		right: 'auto',
-		bottom: 'auto',
-		marginRight: '-50%',
-		transform: 'translate(-50%,-50%)'
-	}
-}
+const profileStyles = {
+    paper: {
+        position: 'relative',
+        width: "180px",
+        backgroundColor: "#fff",
+        top: "30%",
+        margin: "0 auto",
+        boxShadow: "2px 2px #888888",
+        padding: "20px"
+    },
+    media: {
+        height: '200px',
+        paddingTop: '56.25%', // 16:9
+    },
+    imageModal: {
+        backgroundColor: "#fff",
+        margin: "0 auto",
+        boxShadow: "2px 2px #888888",
+        padding: "10px",
+    }
+};
 
 class Profile extends Component {
 
-	constructor(props) {
-		super(props);
-		/*if (sessionStorage.getItem('access-token') == null) {
-		  this.props.history.replace('/');
-		}*/
+    constructor(props) {
+        super(props);
+        if (sessionStorage.getItem('access-token') == null) {
+            props.history.replace('/');
+        }
+        this.state = {
+            profile_picture: null,
+            username: null,
+            full_name: null,
+            posts: null,
+            follows: null,
+            followed_by: null,
+            editOpen: false,
+            fullNameRequired: 'dispNone',
+            newFullName: '',
+            mediaData: null,
+            imageModalOpen: false,
+            currentItem: null,
+            likeSet:new Set(),
+            comments:{},
+        }
+    }
 
-		if (sessionStorage.getItem('access-token') == null) {
-			props.history.replace('/');
-		}
-		this.state = {
-			information: [],
-			image_posts: [],
-			counts: [],
-			modalIsOpen: false,
-			fullnameRequired: "dispNone",
-			fullname: "",
-			newfullname: "",
-			currentImage: "",
-			comment: "",
-			comments: "",
-			currentComment: "",
-			isLiked: false,
-			modalImageIsOpen: false,
-			loggedIn: sessionStorage.getItem("access-token") == null ? false : true
-		}
-	}
+    componentDidMount() {
+        this.getUserInfo();
+        this.getMediaData();
+    }
 
-	componentDidMount() {
-		
-		this.getUserInfo();
-		this.getMediaData();
-	}
+    getUserInfo = () => {
+        let that = this;
+        let myUrl = `${constants.userInfoUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
+        return fetch(myUrl, {
+            method: 'GET',
+        }).then((response) => {
+            return response.json();
+        }).then((jsonResponse) => {
+            that.setState({
+                profile_picture: jsonResponse.data.profile_picture,
+                username: jsonResponse.data.username,
+                full_name: jsonResponse.data.full_name,
+                posts: jsonResponse.data.counts.media,
+                follows: jsonResponse.data.counts.follows,
+                followed_by: jsonResponse.data.counts.followed_by
+            });
+        }).catch((error) => {
+            console.log('error user data',error);
+        });
+    }
 
-	openModalHandler = () => {
-		this.setState({ modalIsOpen: true });
-	}
-	closeModalHandler = () => {
-		this.setState({ modalIsOpen: false, fullnameRequired: "dispNone", value: 0 });
-	}
-	openImageModalHandler = (image_post) => {
-		let currentState = this.state;
-		currentState.modalImageIsOpen = true;
-		currentState.currentImage = image_post;
-		// this.setState({ modalImageIsOpen: true,
-		// 	currentImage: image_post, });
-		//this.props.history.push(image_url);
-		this.setState({state: currentState});
+    getMediaData = () => {
+        let that = this;
+        let myUrl = `${constants.userMediaUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
+        return fetch(myUrl,{
+            method: 'GET',
+        }).then((response) => {
+            return response.json();
+        }).then((jsonResponse) => {
+            that.setState({
+                mediaData: jsonResponse.data
+            });
+        }).catch((error) => {
+            console.log('error media data',error);
+        });
+    }
 
-	}
-	closeImageModalHandler = () => {
-		this.setState({ modalImageIsOpen: false });
-	}
-	inputfullNameChangeHandler = (e) => {
-		this.setState({ newfullname: e.target.value });
-	}
+    handleOpenEditModal = () => {
+        this.setState({ editOpen: true });
+    }
 
-	addCommentClickHandler = (id) => {
-		if (this.state.currentComment === "" || typeof this.state.currentComment === undefined) {
-			return;
-		}
-		console.log("In addCommentClickHandler");
-		let commentList = this.state.comments.hasOwnProperty(id) ?
-			this.state.comments[id].concat(this.state.currentComment) : [].concat(this.state.currentComment);
-		console.log(" currentComment" + this.state.currentComment);
-		this.setState({
-			comments: {
-				...this.state.comments,
-				[id]: commentList
-			},
-			currentComment: ''
-		})
-	}
+    handleCloseEditModal = () => {
+        this.setState({ editOpen: false });
+    }
 
+    handleOpenImageModal = (event) => {
+        var result = this.state.mediaData.find(item => {
+            return item.id === event.target.id
+        })
+        this.setState({ imageModalOpen: true, currentItem: result });
+    }
 
+    handleCloseImageModal = () => {
+        this.setState({ imageModalOpen: false });
+    }
 
-	updateClickHandler = () => {
-		this.state.newfullname === "" ? this.setState({ fullnameRequired: "dispBlock" }) : this.setState({ fullnameRequired: "dispNone" });		
-		this.setState({fullname: this.state.newfullname});
-		this.closeModalHandler();
-	}
+    inputFullNameChangeHandler = (e) => {
+        this.setState({
+            newFullName: e.target.value
+        })
+    }
 
-	render() {
-		const{classes} = this.props;
-		let hashTags = this.state.image_posts.map(hash => {
-			return "#" + hash.tags;
-		});
-		const comments = this.props;
+    updateClickHandler = () => {
+        if (this.state.newFullName === '') {
+            this.setState({ fullNameRequired: 'dispBlock'})
+        } else {
+            this.setState({ fullNameRequired: 'dispNone' })
+        }
 
-		return (
+        if (this.state.newFullName === "") { return }
 
-			<div>
-				<Header
-					userProfileUrl={this.state.information.profile_picture}
-					screen={"Profile"}
-					handleLogout={this.logout}
-					handleAccount={this.navigateToAccount} />
-				<Grid container justify="center" alignItems="center">
-					<Avatar alt={this.state.fullname} src={this.state.information.profile_picture} className={classes.bigAvatar} />
-					<span>
-						<div>{this.state.information.username} </div>
-						<div>Posts: {this.state.counts.media} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Follows: {this.state.counts.follows} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Followed By: {this.state.counts.followed_by} </div>
-						<div>{this.state.fullname}&nbsp;
-							<Fab size="small" color="secondary" aria-label="edit" className={classes.fab}  >
-								<EditIcon  className={classes.fab} onClick={this.openModalHandler} />
-							</Fab>
-						</div>
-					</span>
-				</Grid>
-				<Modal ariaHideApp={false} isOpen={this.state.modalIsOpen} contentLabel="Edit" onRequestClose={this.closeModalHandler} style={customStyles}>
-					<FormControl label="Edit">
-						<Typography >Edit </Typography>
-						<TextField required id="fullname" label="Full Name" onChange={this.inputfullNameChangeHandler} margin="normal" />
-						<FormHelperText className={this.state.fullnameRequired}><span className="red">required</span></FormHelperText>
-					</FormControl>
-					{/*<FormControl required>
-							<Input id="fullname" placeholder="Full Name" type="text" fullname={this.state.fullname} onChange={this.inputfullNameChangeHandler}/>
-							<FormHelperText className={this.state.fullnameRequired}><span className="red">required</span></FormHelperText>
-						</FormControl><br/> */}
-					<br /><br />
-					<Button variant="contained" color="primary" onClick={this.updateClickHandler}>UPDATE</Button>
-				</Modal>
-				<div justify="center" className={classes.gridDiv}>
-					<GridList cols={3} justify="center" className={classes.gridListPosts} >
-						{this.state.image_posts.map(image_post => (
-							<GridListTile key={"post" + image_post.id}>
-								<img src={image_post.images.thumbnail.url} className="image-poster" alt="Click" onClick={() => this.openImageModalHandler(image_post)} />
-							</GridListTile>
-						))}
-					</GridList>
-				</div>
-				
-				<Modal ariaHideApp={false} isOpen={this.state.modalImageIsOpen} contentLabel="Images" onRequestClose={this.closeImageModalHandler} style={customStyles}>
-				{(this.state.currentImage !== "") && <Grid container justify="top" alignItems="center"> 
-							 <img src={this.state.currentImage.images.standard_resolution.url} className={classes.imageStandard} alt="as" />
-							<Avatar alt={this.state.fullname} src={this.state.information.profile_picture} className={classes.bigAvatar} />
-								{this.state.information.username}
-								{(this.state.currentImage.caption !== null) && <span>{(this.state.currentImage.caption.text).substring(0, this.state.currentImage.caption.text.indexOf('#'))}</span>}
+        this.setState({
+            full_name: this.state.newFullName
+        })
 
-					</Grid>}
-					
-					
-					{/* {this.state.image_posts.map(user_post => (
-						<div key={user_post.id}>
-							<Avatar alt={user_post.user.full_name} src={user_post.user.profile_picture} className={classes.bigAvatar} />
-							<span>
-								<div>{user_post.user.username} </div>
-							</span>
-							<hr />
-							<span>{user_post.caption} {user_post.created_time}</span>
-							<Typography style={{ color: '#4dabf5' }} component="p" >
-								{hashTags.join(' ')}
-							</Typography>
-							<span>
-								<IconButton aria-label="Add to favorites" onClick={this.onLikeClicked.bind(this, user_post.id)}>
-									{this.state.isLiked && <FavoriteIconFill style={{ color: '#F44336' }} />}
-									{!this.state.isLiked && <FavoriteIconBorder />}
-								</IconButton>
-								<Typography component="p">
-									{user_post.likes.count} Likes
-					              </Typography>
-							</span>
-							{comments.hasOwnProperty(user_post.id) && comments[user_post.id].map((comment, index) => {
-								return (
-									<div key={index} className="row">
-										<Typography component="p" style={{ fontWeight: 'bold' }}>
-											{sessionStorage.getItem('username')}:
-				                  </Typography>
-										<Typography component="p" >
-											{comment}
-										</Typography>
-									</div>
-								)
-							})}
-							<div >
-								<FormControl style={{ flexGrow: 1 }}>
-									<InputLabel htmlFor="comment">Add Comment</InputLabel>
-									<Input id="comment" value={this.state.comment} onChange={this.commentChangeHandler} />
-								</FormControl>
-								<FormControl>
-									<Button onClick={this.onAddCommentClicked.bind(this, user_post.id)}
-										variant="contained" color="primary">
-										ADD
-					                </Button>
-								</FormControl>
-							</div>
-						</div>
-					))} */}
-				</Modal>
-			</div>
-		);
-	}
+        this.handleCloseEditModal()
+    }
 
-	getUserInfo = () => {
-		let that = this;
-		let url = `${constants.userInfoUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
-		return fetch(url,{
-		  method:'GET',
-		}).then((response) =>{
-			return response.json();
-		}).then((jsonResponse) =>{
-		  that.setState({
-			information:jsonResponse.data,
-			counts:jsonResponse.data.counts,
-			fullname:jsonResponse.data.full_name,
-			newfullname:jsonResponse.data.full_name
-		  });
-		}).catch((error) => {
-		  console.log('error user data',error);
-		});
-	  }
-	
-	  getMediaData = () => {
-		let that = this;
-		let url = `${constants.userMediaUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
-		return fetch(url,{
-		  method:'GET',
-		}).then((response) =>{
-			return response.json();
-		}).then((jsonResponse) =>{
-		  that.setState({
-			image_posts:jsonResponse.data,
-		  });
-		}).catch((error) => {
-		  console.log('error user data',error);
-		});
-	  }
+    likeClickHandler = (id) =>{
+      var foundItem = this.state.currentItem;
+      if (typeof foundItem !== undefined) {
+        if (!this.state.likeSet.has(id)) {
+          foundItem.likes.count++;
+          this.setState(({likeSet}) => ({
+            likeSet:new Set(likeSet.add(id))
+          }))
+        }else {
+          foundItem.likes.count--;
+          this.setState(({likeSet}) =>{
+            const newLike = new Set(likeSet);
+            newLike.delete(id);
+            return {
+              likeSet:newLike
+            };
+          });
+        }
+      }
+    }
 
-	commentChangeHandler = (e) => {
-		this.setState({
-			currentComment: e.target.value
-		});
-	}
+    onAddCommentClicked = (id) => {
+      if (this.state.currentComment === "" || typeof this.state.currentComment === undefined) {
+        return;
+      }
 
-	onLikeClicked = (id) => {
-		if (this.state.isLiked) {
-			this.setState({
-				isLiked: false
-			});
-		} else {
-			this.setState({
-				isLiked: true
-			});
-		}
-		this.props.onLikedClicked(id)
-	}
+      let commentList = this.state.comments.hasOwnProperty(id)?
+        this.state.comments[id].concat(this.state.currentComment): [].concat(this.state.currentComment);
 
-	onAddCommentClicked = (id) => {
-		if (this.state.comment === "" || typeof this.state.comment === undefined) {
-			return;
-		}
-		this.setState({
-			comment: ""
-		});
-		this.props.onAddCommentClicked(id);
-	}
+      this.setState({
+        comments:{
+          ...this.state.comments,
+          [id]:commentList
+        },
+        currentComment:''
+      })
+    }
 
-	logout = () => {
-		sessionStorage.clear();
-		this.props.history.replace('/');
-	}
+    commentChangeHandler = (e) => {
+      this.setState({
+        currentComment:e.target.value
+      });
+    }
 
-	navigateToAccount = () => {
-		this.props.history.push('/profile');
-	}
+    logout = () => {
+      sessionStorage.clear();
+      this.props.history.replace('/');
+    }
+
+    render() {
+      let hashTags = []
+      if (this.state.currentItem !== null) {
+        hashTags = this.state.currentItem.tags.map(hash =>{
+          return "#"+hash;
+        });        
+      }
+        return(
+            <div>
+                <Header
+                  screen={"Profile"}
+                  userProfileUrl={this.state.profile_picture}
+                  handleLogout={this.logout}/>
+                <div className="user-info-section">
+                    <Avatar
+                        alt="User Image"
+                        src={this.state.profile_picture}
+                        style={{width: "50px", height: "50px"}}
+                    />
+                    <span style={{marginLeft: "20px"}}>
+                        <div style={{width: "600px", fontSize: "big"}}> {this.state.username} <br />
+                            <div style={{float: "left", width: "200px", fontSize: "small"}}> Posts: {this.state.posts} </div>
+                            <div style={{float: "left", width: "200px", fontSize: "small"}}> Follows: {this.state.follows} </div>
+                            <div style={{float: "left", width: "200px", fontSize: "small"}}> Followed By: {this.state.followed_by}</div> <br />
+                        </div>
+                        <div style={{fontSize: "small"}}> {this.state.full_name}
+                        <Button mini variant="fab" color="secondary" aria-label="Edit" style={{marginLeft: "20px"}} onClick={this.handleOpenEditModal}>
+                            <Icon>edit_icon</Icon>
+                        </Button>
+                        </div>
+                        <Modal
+                            aria-labelledby="edit-modal"
+                            aria-describedby="modal to edit user full name"
+                            open={this.state.editOpen}
+                            onClose={this.handleCloseEditModal}
+                            style={{alignItems: 'center', justifyContent: 'center'}}
+                        >
+                            <div style={profileStyles.paper}>
+                                <Typography variant="h5" id="modal-title">
+                                    Edit
+                                </Typography><br />
+                                <FormControl required>
+                                    <InputLabel htmlFor="fullname">Full Name</InputLabel>
+                                    <Input id="fullname" onChange={this.inputFullNameChangeHandler} />
+                                    <FormHelperText className={this.state.fullNameRequired}><span className="red">required</span></FormHelperText>
+                                </FormControl><br /><br /><br />
+                                <Button variant="contained" color="primary" onClick={this.updateClickHandler}>
+                                    UPDATE
+                                </Button>
+                            </div>
+                        </Modal>
+                    </span>
+                </div>
+
+                {this.state.mediaData != null &&
+                <GridList cellHeight={'auto'} cols={3} style={{padding: "40px"}}>
+                {this.state.mediaData.map(item => (
+                    <GridListTile key={item.id}>
+                    <CardMedia
+                        id={item.id}
+                        style={profileStyles.media}
+                        image={item.images.standard_resolution.url}
+                        title={item.caption.text}
+                        onClick={this.handleOpenImageModal}
+                    />
+                    </GridListTile>
+                ))}
+                </GridList>}
+
+                {this.state.currentItem != null &&
+                <Modal
+                    aria-labelledby="image-modal"
+                    aria-describedby="modal to show image details"
+                    open={this.state.imageModalOpen}
+                    onClose={this.handleCloseImageModal}
+                    style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
+                    <div style={{display:'flex',flexDirection:'row',backgroundColor: "#fff",width:'70%',height:'70%'}}>
+                      <div style={{width:'50%',padding:10}}>
+                        <img style={{height:'100%',width:'100%'}}
+                          src={this.state.currentItem.images.standard_resolution.url}
+                          alt={this.state.currentItem.caption.text} />
+                      </div>
+
+                      <div style={{display:'flex', flexDirection:'column', width:'50%', padding:10}}>
+                        <div style={{borderBottom:'2px solid #f2f2f2',display:'flex', flexDirection:'row',justifyContent:'flex-start',alignItems:'center'}}>
+                          <Avatar
+                            alt="User Image"
+                            src={this.state.profile_picture}
+                            style={{width: "50px", height: "50px",margin:'10px'}}/>
+                            <Typography component="p">
+                              {this.state.username}
+                            </Typography>
+                        </div>
+                        <div style={{display:'flex', height:'100%', flexDirection:'column', justifyContent:'space-between'}}>
+                          <div>
+                            <Typography component="p">
+                              {this.state.currentItem.caption.text}
+                            </Typography>
+                            <Typography style={{color:'#4dabf5'}} component="p" >
+                              {hashTags.join(' ')}
+                            </Typography>
+                            {this.state.comments.hasOwnProperty(this.state.currentItem.id) && this.state.comments[this.state.currentItem.id].map((comment, index)=>{
+                              return(
+                                <div key={index} className="rowStyle">
+                                  <Typography component="p" style={{fontWeight:'bold'}}>
+                                    {sessionStorage.getItem('username')}:
+                                  </Typography>
+                                  <Typography component="p" >
+                                    {comment}
+                                  </Typography>
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <div>
+                            <div className="rowStyle">
+                              <IconButton aria-label="Add to favorites" onClick={this.likeClickHandler.bind(this,this.state.currentItem.id)}>
+                                {this.state.likeSet.has(this.state.currentItem.id) && <FavoriteIconFill style={{color:'#F44336'}}/>}
+                                {!this.state.likeSet.has(this.state.currentItem.id) && <FavoriteIconBorder/>}
+                              </IconButton>
+                              <Typography component="p">
+                                {this.state.currentItem.likes.count} Likes
+                              </Typography>
+                            </div>
+                            <div className="rowStyle">
+                              <FormControl style={{flexGrow:1}}>
+                                <InputLabel htmlFor="comment">Add Comment</InputLabel>
+                                <Input id="comment" value={this.state.currentComment} onChange={this.commentChangeHandler}/>
+                              </FormControl>
+                              <FormControl>
+                                <Button onClick={this.onAddCommentClicked.bind(this,this.state.currentItem.id)}
+                                   variant="contained" color="primary">
+                                  ADD
+                                </Button>
+                              </FormControl>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </Modal>}
+            </div>
+        )
+    }
 }
 
-export default withStyles(styles)(Profile);
-//export default  makeStyles (classes) (Profile);
+export default Profile;
