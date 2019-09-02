@@ -109,6 +109,7 @@ class Home extends Component {
     );
   }
 
+  /* The function is called when the value of the InputBase field for Search gets changed */
   onSearchEntered = (value) => {
     let filteredData = this.state.data;
     filteredData = filteredData.filter((data) => {
@@ -126,6 +127,7 @@ class Home extends Component {
     })
   }
 
+  /* The below function gets called when the like icon gets clicked */
   likeClickHandler = (id) => {
     var foundItem = this.state.data.find((item) => {
       return item.id === id;
@@ -151,6 +153,7 @@ class Home extends Component {
     }
   }
 
+  /* The below function is used to add a comment when ADD button is clicked */
   addCommentClickHandler = (id) => {
     if (this.state.currentComment === "" || typeof this.state.currentComment === undefined) {
       return;
@@ -168,13 +171,14 @@ class Home extends Component {
     })
   }
 
-
+  /* The below function is used to set the state variable currentComment when the value of the comment input gets changed */
   commentChangeHandler = (e) => {
     this.setState({
       currentComment: e.target.value
     });
   }
 
+  /* The below function is used to get the user details and to store the user information in a state variable by using get request */
   getUserInfo = () => {
     let that = this;
     let url = `${constants.userInfoUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
@@ -191,6 +195,7 @@ class Home extends Component {
     });
   }
 
+  /* The below function is used to get the media details and to store the media data in state variables by using get request */
   getMediaData = () => {
     let that = this;
     let url = `${constants.userMediaUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
@@ -208,11 +213,13 @@ class Home extends Component {
     });
   }
 
+  /* The below function is called to clear the session storage and to redirect to the login page when the Logout MenuItem gets clicked */
   logout = () => {
     sessionStorage.clear();
     this.props.history.replace('/');
   }
 
+  /* The below function is called when My Account MenuItem gets clicked to navigate to the profile page */
   navigateToAccount = () => {
     this.props.history.push('/profile');
   }
@@ -311,6 +318,7 @@ class HomeItem extends Component {
     )
   }
 
+  /* The below function gets called when the like icon gets clicked */
   onLikeClicked = (id) => {
     if (this.state.isLiked) {
       this.setState({
@@ -324,6 +332,7 @@ class HomeItem extends Component {
     this.props.onLikedClicked(id)
   }
 
+  /* The below function is called when the value of comment input field gets changed */
   commentChangeHandler = (e) => {
     this.setState({
       comment: e.target.value,
@@ -331,6 +340,7 @@ class HomeItem extends Component {
     this.props.commentChangeHandler(e);
   }
 
+  /* The below function is called when the ADD button is clicked to add a new comment */
   onAddCommentClicked = (id) => {
     if (this.state.comment === "" || typeof this.state.comment === undefined) {
       return;

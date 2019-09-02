@@ -72,6 +72,7 @@ class Profile extends Component {
 		this.getMediaData();
 	}
 
+	/* The below function is used to get the user detailsand store the user information in state variables by using get request  */
 	getUserInfo = () => {
 		let that = this;
 		let myUrl = `${constants.userInfoUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
@@ -93,6 +94,7 @@ class Profile extends Component {
 		});
 	}
 
+	/* The below function is used to get the media details and store the media data in a state variable by using get request */
 	getMediaData = () => {
 		let that = this;
 		let myUrl = `${constants.userMediaUrl}/?access_token=${sessionStorage.getItem('access-token')}`;
@@ -109,14 +111,17 @@ class Profile extends Component {
 		});
 	}
 
+	/* The below function is used to set the open attribute of edit-modal to true */
 	handleOpenEditModal = () => {
 		this.setState({ editOpen: true });
 	}
 
+	/* The below function is used to set the open attribute of edit-modal to false */
 	handleCloseEditModal = () => {
 		this.setState({ editOpen: false });
 	}
 
+	/* The below function is used to set the open attribute of image-modal to true */
 	handleOpenImageModal = (event) => {
 		var result = this.state.mediaData.find(item => {
 			return item.id === event.target.id
@@ -124,16 +129,19 @@ class Profile extends Component {
 		this.setState({ imageModalOpen: true, currentItem: result });
 	}
 
+	/* The below function is used to set the open attribute of image-modal to false */
 	handleCloseImageModal = () => {
 		this.setState({ imageModalOpen: false });
 	}
 
+	/* The below function is used to set the state variable newFullName when the value of fullname input field gets changed */
 	inputFullNameChangeHandler = (e) => {
 		this.setState({
 			newFullName: e.target.value
 		})
 	}
 
+	/* The below function is used to set the full_name state variable, when the UPDATE button is clicked */
 	updateClickHandler = () => {
 		if (this.state.newFullName === '') {
 			this.setState({ fullNameRequired: 'dispBlock' })
@@ -150,6 +158,7 @@ class Profile extends Component {
 		this.handleCloseEditModal()
 	}
 
+	/* The below function is used to set the likeSet state variable when the like IconButton gets clicked. */
 	likeClickHandler = (id) => {
 		var foundItem = this.state.currentItem;
 		if (typeof foundItem !== undefined) {
@@ -171,6 +180,7 @@ class Profile extends Component {
 		}
 	}
 
+	/* The below function is used to add a comment when ADD button gets clicked */
 	onAddCommentClicked = (id) => {
 		if (this.state.currentComment === "" || typeof this.state.currentComment === undefined) {
 			return;
@@ -188,12 +198,14 @@ class Profile extends Component {
 		})
 	}
 
+	/* The below function is used to set the state variable currentComment when the value of the comment input gets changed */
 	commentChangeHandler = (e) => {
 		this.setState({
 			currentComment: e.target.value
 		});
 	}
 
+	/* The below function is called to clear the session storage and to redirect to the login page when the Logout MenuItem gets clicked */
 	logout = () => {
 		sessionStorage.clear();
 		this.props.history.replace('/');

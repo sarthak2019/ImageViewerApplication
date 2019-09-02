@@ -147,22 +147,26 @@ class Header extends Component {
     );
   }
 
+  /* The below function is called when the IconButton with the Avatar "Profile Pic" gets clicked */
   handleClick = event => {
     this.setState({
       anchorEl: event.currentTarget
     });
   };
 
+  /* The below function is called when the MenuItem My Account gets clicked */
   handleAccount = () => {
     this.props.handleAccount();
     this.handleClose();
   };
 
+  /* The below function is called when the MenuItem Logout gets clicked */
   handleLogout = () => {
     this.props.handleLogout();
     this.handleClose();
   };
 
+  /* The below function is used to set the state variable anchorEl to null, so that this state variable can be used to open or close the simple-menu Popover */
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
